@@ -1,0 +1,72 @@
+{% extends 'base.html' %} {% block content %}
+<h1 class="text-3xl font-bold mb-6">Recommended Movies</h1>
+
+<!-- Search Bar -->
+<div class="mb-6">
+  <form action="{{ url_for('search') }}" method="GET" class="flex search-form">
+    <input
+      type="text"
+      name="query"
+      placeholder="Search movies by title..."
+      class="search-input"
+    />
+    <button type="submit" class="search-button">Search</button>
+  </form>
+</div>
+
+<!-- Genre Filter -->
+<div class="mb-6 genre-filter">
+  <form action="{{ url_for('index') }}" method="GET">
+    <label class="block text-lg font-semibold mb-2">Filter by Genre:</label>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+      {% for genre in genres %}
+      <label class="flex items-center">
+        <input
+          type="checkbox"
+          name="genres"
+          value="{{ genre }}"
+          {%
+          if
+          selected_genres
+          and
+          genre
+          in
+          selected_genres
+          %}checked{%
+          endif
+          %}
+          class="mr-2 genre-checkbox"
+        />
+        {{ genre }}
+      </label>
+      {% endfor %}
+    </div>
+    <div class="mt-4">
+      <button type="submit" class="filter-button">Apply Filter</button>
+      <a href="{{ url_for('index') }}" class="clear-filter">Clear Filter</a>
+    </div>
+  </form>
+</div>
+
+<!-- Movie Recommendations -->
+<div
+  class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+>
+  {% if recommendations %} {% for movie in recommendations %}
+  <div class="movie-card">
+    <div class="content">
+      <h2>{{ movie.title }}</h2>
+      <p class="genre">{{ movie.genre }}</p>
+      <p class="overview">{{ movie.overview | truncate(100) }}</p>
+      <a
+        href="{{ url_for('like_movie', movie_id=movie.id) }}"
+        class="like-button"
+        >Like</a
+      >
+    </div>
+  </div>
+  {% endfor %} {% else %}
+  <p>No movies match the selected genres.</p>
+  {% endif %}
+</div>
+{% endblock %}
